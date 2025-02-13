@@ -3,13 +3,6 @@ import React from "react";
 import { useAuth } from "react-oidc-context";
 import { Outlet } from "react-router";
 
-export function meta() {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
-}
-
 function isCustomProfile(
   profile: unknown,
 ): profile is { "cognito:username": string; email: string } {
@@ -27,15 +20,12 @@ function Auth() {
   const auth = useAuth();
   // const location = useLocation();
 
-  const signOutRedirect = () => {
-    const clientId = import.meta.env.VITE_COGNITO_CLIENT_ID;
-    const logoutUri = import.meta.env.VITE_COGNITO_LOGOUT_URI;
-    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN;
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
-
   if (auth.isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   if (auth.error) {
@@ -69,14 +59,15 @@ function Auth() {
   }
 
   return (
-    <div>
-      <p>
-        <button onClick={() => auth.signinRedirect()}>Sign in</button>
-      </p>
-      <p>
-        <button onClick={() => signOutRedirect()}>Sign out</button>
-      </p>
-    </div>
+    <p className="flex h-screen w-full items-center justify-center">
+      ログイン・サインアップは
+      <span
+        onClick={() => auth.signinRedirect()}
+        className="cursor-pointer text-blue-500 hover:underline"
+      >
+        こちら
+      </span>
+    </p>
   );
 }
 

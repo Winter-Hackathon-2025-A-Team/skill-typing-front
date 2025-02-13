@@ -26,8 +26,17 @@ export default function Header() {
     };
   }, []);
 
+  const handleLogout = () => {
+    const clientId = import.meta.env.VITE_COGNITO_CLIENT_ID;
+    const logoutUri = import.meta.env.VITE_COGNITO_LOGOUT_URI;
+    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN;
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
+      logoutUri,
+    )}`;
+  };
+
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 bg-white">
+    <header className="fixed top-0 right-0 left-0 z-50 bg-white">
       <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-2">
         <Link to="/" className="text-xl text-gray-900">
           Skill Typing
@@ -44,9 +53,10 @@ export default function Header() {
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 mt-4 w-32 rounded border bg-white shadow-lg">
+            <div className="absolute right-0 mt-4 w-32 rounded border border-blue-600 bg-white shadow-lg">
               <button
                 type="button"
+                onClick={handleLogout}
                 className="block w-full px-4 py-2 text-center text-gray-900 hover:bg-gray-100"
               >
                 ログアウト
