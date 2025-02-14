@@ -1,6 +1,12 @@
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 
 export const handlers = [
+  http.get(
+    "https://ap-northeast-1afthjej7w.auth.ap-northeast-1.amazoncognito.com/.well-known/openid-configuration",
+    () => {
+      return passthrough();
+    },
+  ),
   http.get("/api/game/questions", () => {
     return HttpResponse.json({
       questions: [

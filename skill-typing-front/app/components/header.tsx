@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import { Link } from "react-router";
 
 export default function Header() {
+  const auth = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -26,13 +28,13 @@ export default function Header() {
     };
   }, []);
 
-  const handleLogout = () => {
-    const clientId = import.meta.env.VITE_COGNITO_CLIENT_ID;
-    const logoutUri = import.meta.env.VITE_COGNITO_LOGOUT_URI;
-    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN;
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
-      logoutUri,
-    )}`;
+  const handleLogout = async () => {
+    await auth.signoutRedirect({
+      extraQueryParams: {
+        client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+        logout_uri: import.meta.env.VITE_COGNITO_LOGOUT_URI,
+      },
+    });
   };
 
   return (

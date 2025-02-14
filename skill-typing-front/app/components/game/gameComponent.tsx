@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "./button";
+import Button from "../button";
 import type { Question } from "~/types/types";
 
 export default function GameComponent({

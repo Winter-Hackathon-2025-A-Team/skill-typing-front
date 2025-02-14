@@ -1,6 +1,6 @@
 import React from "react";
 import type { Question } from "~/types/types";
-import LinkButton from "./linkButton";
+import LinkButton from "../linkButton";
 
 export default function GameExplanation({
   question,

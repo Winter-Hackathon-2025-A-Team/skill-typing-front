@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router";
 import Button from "~/components/button";
 import LinkButton from "~/components/linkButton";
 
@@ -10,7 +9,6 @@ export default function Home() {
         <Button>モード選択</Button>
         <LinkButton url="/game">ゲーム開始</LinkButton>
         <p className="text-gray-900">最終スコア : ◯◯問</p>
-        <Link to="/login">ログイン</Link>
       </div>
     </div>
   );

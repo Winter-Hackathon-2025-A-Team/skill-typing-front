@@ -1,8 +1,9 @@
 import React from "react";
 import Header from "./header";
 import { Outlet } from "react-router";
+import { withAuthenticationRequired } from "react-oidc-context";
 
-export default function Layout() {
+function Layout() {
   return (
     <>
       <Header />
@@ -12,3 +13,11 @@ export default function Layout() {
     </>
   );
 }
+
+export default withAuthenticationRequired(Layout, {
+  OnRedirecting: () => (
+    <div className="flex h-screen w-full items-center justify-center">
+      ログインページにリダイレクト中...
+    </div>
+  ),
+});
