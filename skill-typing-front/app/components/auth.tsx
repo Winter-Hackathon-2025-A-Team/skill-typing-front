@@ -20,8 +20,8 @@ function Auth() {
 
   if (auth.isLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        Loading...
+      <div className="grid min-h-screen place-items-center">
+        <p className="-translate-y-12 transform">リダイレクト中...</p>
       </div>
     );
   }
@@ -32,15 +32,17 @@ function Auth() {
 
   if (!auth.isAuthenticated) {
     return (
-      <p className="flex h-screen w-full items-center justify-center">
-        ログイン・サインアップは
-        <span
-          onClick={() => auth.signinRedirect()}
-          className="cursor-pointer text-blue-500 hover:underline"
-        >
-          こちら
-        </span>
-      </p>
+      <div className="grid min-h-screen place-items-center">
+        <p className="-translate-y-12 transform">
+          ログイン・サインアップは
+          <span
+            onClick={() => auth.signinRedirect()}
+            className="cursor-pointer text-blue-500 hover:underline"
+          >
+            こちら
+          </span>
+        </p>
+      </div>
     );
   }
 

@@ -16,8 +16,8 @@ function Layout() {
 
 export default withAuthenticationRequired(Layout, {
   OnRedirecting: () => (
-    <div className="flex h-screen w-full items-center justify-center">
-      ログインページにリダイレクト中...
+    <div className="grid min-h-screen place-items-center">
+      <p className="-translate-y-12 transform">リダイレクト中...</p>
     </div>
   ),
 });
