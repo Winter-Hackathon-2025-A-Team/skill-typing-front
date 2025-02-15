@@ -1,29 +1,15 @@
 import React from "react";
-import Auth from "../auth/auth";
-
-import { AuthProvider } from "react-oidc-context";
-
-const cognitoAuthConfig = {
-  authority: import.meta.env.VITE_COGNITO_AUTHORITY,
-  client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
-  redirect_uri: import.meta.env.VITE_COGNITO_REDIRECT_URI,
-  response_type: import.meta.env.VITE_COGNITO_RESPONSE_TYPE,
-  scope: import.meta.env.VITE_COGNITO_SCOPE,
-};
-
-export function meta() {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
-}
+import Button from "~/components/button";
+import LinkButton from "~/components/linkButton";
 
 export default function Home() {
   return (
-    <>
-      <AuthProvider {...cognitoAuthConfig}>
-        <Auth />
-      </AuthProvider>
-    </>
+    <div className="grid min-h-screen -translate-y-12 transform place-items-center">
+      <div className="grid max-w-screen-xl place-items-center gap-4 px-4">
+        <Button>モード選択</Button>
+        <LinkButton url="/game">ゲーム開始</LinkButton>
+        <p className="text-gray-900">最終スコア : ◯◯問</p>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import GameComponent from "~/components/gameComponent";
-import GameResult from "~/components/gameResult";
-import GameExplanation from "~/components/gameExplanation";
+import GameComponent from "~/components/game/gameComponent";
+import GameResult from "~/components/game/gameResult";
+import GameExplanation from "~/components/game/gameExplanation";
 import type { Choice, QuestionsResponse } from "~/types/types";
 
 export async function clientLoader() {
