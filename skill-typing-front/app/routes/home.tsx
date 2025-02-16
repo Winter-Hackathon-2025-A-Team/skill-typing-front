@@ -1,19 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
 import Button from "~/components/button";
-import type { Score } from "~/types/types";
 
-export async function clientLoader() {
+export default function Home() {
+  const auth = useAuth();
   const uri = import.meta.env.VITE_API_URI;
+  const [latestScore, setLatestScore] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const response = await fetch(`${uri}/api/scores/latest`);
+  useEffect(() => {
+    if (auth.isLoading) {
+      return;
+    }
 
-  const latestScore: Score = await response.json();
+    if (!auth.user) {
+      setError("ユーザー情報が取得できませんでした。");
+      setLoading(false);
+      return;
+    }
 
-  return latestScore;
-}
+    const fetchLatestScore = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = auth.user?.access_token;
+        const response = await fetch(`${uri}/api/scores/latest`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`${response.status} ${errorText}`);
+        }
+        const data = await response.json();
 
-export default function Home({ loaderData }: { loaderData: Score }) {
+        if (data && typeof data.score !== "undefined") {
+          setLatestScore(data.score);
+        } else {
+          throw new Error("レスポンスにscoreプロパティが含まれていません");
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+          console.log("スコア取得エラー:", err);
+        } else {
+          setError("予期しないエラーが発生しました");
+          console.log("スコア取得エラー:", err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLatestScore();
+  }, [auth.user, uri]);
+
   const [category, setCategory] = useState("基本情報技術者");
   const navigate = useNavigate();
 
@@ -29,7 +74,13 @@ export default function Home({ loaderData }: { loaderData: Score }) {
   return (
     <div className="grid min-h-screen -translate-y-12 transform place-items-center">
       <div className="grid max-w-screen-xl place-items-center gap-4 px-4">
-        <p className="text-gray-900">最終スコア : {loaderData.score}点</p>
+        {loading ? (
+          <p className="text-gray-900">読み込み中...</p>
+        ) : error ? (
+          <p className="text-red-500">エラー: {error}</p>
+        ) : (
+          <p className="text-gray-900">最終スコア : {latestScore}点</p>
+        )}
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 items-center justify-items-center gap-4"
