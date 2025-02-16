@@ -2,28 +2,26 @@ import React, { useState } from "react";
 import GameComponent from "~/components/game/gameComponent";
 import GameResult from "~/components/game/gameResult";
 import GameExplanation from "~/components/game/gameExplanation";
-import type { Choice, QuestionsResponse } from "~/types/types";
+import type { Choice, Question } from "~/types/types";
+import { useLoaderData } from "react-router";
 
-export async function clientLoader() {
-  const response = await fetch("/api/game/questions");
-
-  const questions: QuestionsResponse = await response.json();
-
-  return questions;
+export async function clientLoader({ request }: { request: Request }) {
+  const url = new URL(request.url);
+  const category = url.searchParams.get("category");
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URI}/api/game/questions?category=${category}`,
+  );
+  return response.json();
 }
 
-export default function Game({
-  loaderData,
-}: {
-  loaderData: QuestionsResponse;
-}) {
-  const { questions } = loaderData;
+export default function Game() {
+  const { questions } = useLoaderData() as { questions: Question[] };
   const [screen, setScreen] = useState("game");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentExplanationIndex, setCurrentExplanationIndex] = useState(0);
   const [score, setScore] = useState(0);
 
-  const handleAnswer = (userInput: string) => {
+  const handleAnswer = async (userInput: string) => {
     const currentQuestion = questions[currentQuestionIndex];
 
     const correctChoice = currentQuestion.choices.find(
@@ -42,6 +40,14 @@ export default function Game({
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
+      const uri = import.meta.env.VITE_API_URI;
+      await fetch(`${uri}/api/scores`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ score: score + 1 }),
+      });
       setScreen("result");
     }
   };
