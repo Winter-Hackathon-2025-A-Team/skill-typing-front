@@ -20,14 +20,6 @@ export default function Game() {
   const category = new URLSearchParams(location.search).get("category");
 
   useEffect(() => {
-    if (auth.isLoading) return;
-
-    if (!auth.user) {
-      setError("ユーザー情報が取得できませんでした。");
-      setLoading(false);
-      return;
-    }
-
     const fetchQuestions = async () => {
       setLoading(true);
       setError(null);
