@@ -1,104 +1,104 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
+import { useNavigate } from "react-router";
+import TextareaAutosize from "react-textarea-autosize";
 
-type Category = {
+type Category = { id: number; title: string };
+type Question = {
   id: number;
   title: string;
+  content: string;
+  category: Category;
+  choices: { id: number; content: string; description: string }[];
 };
-
-type Word = {
-  id: number;
-  Answer_id: number;
-  word: string;
-};
-
-type QuestionOption = {
-  question_text: string;
-  choices1: string[];
-  choices2: string[];
-  choices3: string[];
-  choices4: string[];
-};
-
-type SelectCategoryOption = {
-  value: number;
-  label: string;
-};
-
-type SelectWordOption = {
-  value: number;
-  label: string;
-};
+type SelectOption = { value: number; label: string };
 
 function SelectComponent() {
-  const [categories, setCategories] = useState<SelectCategoryOption[]>([]);
-  const [selectedCategory, setSelectedCategory] =
-    useState<SelectCategoryOption | null>(null);
-  const [words, setWords] = useState<SelectWordOption[]>([]);
-  const [selectedWord, setSelectedWord] = useState<SelectWordOption | null>(
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [categories, setCategories] = useState<SelectOption[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<SelectOption | null>(
     null,
   );
-  const [question, setQuestion] = useState<QuestionOption | null>(null);
+  const [words, setWords] = useState<SelectOption[]>([]);
+  const [selectedWord, setSelectedWord] = useState<SelectOption | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null,
+  );
+  const navigate = useNavigate();
 
-  // 初回ロード時にカテゴリ一覧を取得
+  // カテゴリのプルダウン表示の処理
   useEffect(() => {
-    axios.get("バック側のエンドポイント").then((response) => {
-      setCategories(
-        response.data.map((category: Category) => ({
-          value: category.id,
-          label: category.title,
-        })),
-      );
+    axios.get("/api/game/questions").then((response) => {
+      const SendQuestions: Question[] = response.data.questions;
+
+      const uniqueCategories = Array.from(
+        new Map(SendQuestions.map((q) => [q.category.id, q.category])).values(),
+      ).map((cat) => ({ value: cat.id, label: cat.title }));
+
+      setQuestions(SendQuestions);
+      setCategories(uniqueCategories);
     });
   }, []);
 
-  // カテゴリ選択時に対応する問題を取得
+  //  単語のプルダウン表示の処理
   useEffect(() => {
     if (selectedCategory) {
-      axios
-        .get(
-          `バック側のエンドポイント/words?category_id=${selectedCategory.value}`,
-        )
-        .then((response) => {
-          setWords(
-            response.data.map((word: Word) => ({
-              value: word.id,
-              label: word.word,
-            })),
-          );
-        });
+      const filteredWords = questions
+        .filter((q) => q.category.id === selectedCategory.value)
+        .map((q) => ({ value: q.id, label: q.title }));
+      setWords(filteredWords);
     } else {
       setWords([]);
     }
-  }, [selectedCategory]);
+    setSelectedWord(null);
+    setSelectedQuestion(null);
+  }, [selectedCategory, questions]);
 
+  // 表示ボタンを押した時の処理
   const handleappear = () => {
     if (selectedWord) {
-      axios
-        .get(`バック側のエンドポイント/questions?word_id=${selectedWord.value}`)
-        .then((response) => {
-          if (response.data.length > 0) {
-            setQuestion(response.data[0]); // 最初の問題をセット
-          } else {
-            setQuestion(null); // データがない場合はリセット
-          }
-        })
-        .catch((error) => {
-          console.error("データ取得エラー:", error);
-        });
+      const foundQuestion = questions.find((q) => q.id === selectedWord.value);
+      setSelectedQuestion(foundQuestion || null);
     }
+  };
+
+  // 保存ボタンを押した時の処理
+  const handlesave = async () => {
+    if (!selectedQuestion) {
+      console.error("エラー: 質問が選択されていません");
+      return;
+    }
+
+    try {
+      const response = await fetch("バックのエンドポイント記載", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selectedQuestion),
+      });
+
+      if (!response.ok) throw new Error("サーバーとの通信に失敗しました");
+
+      console.log("サーバーからのレスポンス:", await response.json());
+    } catch (error) {
+      console.error("エラー:", error);
+    }
+  };
+  // 戻るボタンを押した時の処理
+  const handleNavigate = (path: string) => {
+    navigate(path);
   };
 
   return (
     <div className="container">
+      {/* プルダウンリストから取得したカテゴリーと単語を選択 */}
       <p className="mt-20 text-center text-gray-700">問題</p>
       <Select
         value={selectedCategory}
         options={categories}
         onChange={setSelectedCategory}
         placeholder="ジャンルを選択してください"
-        className="mx-auto flex w-1/4 justify-center border-b py-2 placeholder-gray-500 placeholder-opacity-50 focus:border-b-2 focus:border-blue-500 focus:outline-none"
+        className="placeholder-opacity-50 mx-auto flex w-1/4 justify-center py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
 
       <p className="mt-5 text-center text-gray-700">単語</p>
@@ -107,9 +107,15 @@ function SelectComponent() {
         options={words}
         onChange={setSelectedWord}
         placeholder="単語を入力してください"
-        className="mx-auto flex w-1/4 justify-center border-b py-2 placeholder-gray-500 placeholder-opacity-50 focus:border-b-2 focus:border-blue-500 focus:outline-none"
+        className="placeholder-opacity-50 mx-auto flex w-1/4 justify-center py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
-      <div className="absolute right-1/3 my-2 flex">
+      <div className="center relative my-1 flex w-full justify-around">
+        <button
+          onClick={() => handleNavigate("/management")}
+          className="boder relative inline-block rounded border-gray-400 bg-white px-1 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
+        >
+          戻る
+        </button>
         <button
           onClick={handleappear}
           className="boder relative inline-block rounded border-gray-400 bg-white px-1 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
@@ -118,17 +124,86 @@ function SelectComponent() {
         </button>
       </div>
       {/* 取得した問題と選択肢を表示 */}
-      {question && (
-        <div className="container mt-5 rounded-lg border bg-white p-5 shadow-lg">
-          <h1 className="text-xl font-bold text-gray-800">
-            {question.question_text}
-          </h1>
+      {selectedQuestion && (
+        <div className="mx-auto mt-12 w-full rounded-lg border bg-white p-5 shadow-lg">
+          <TextareaAutosize
+            type="text"
+            value={selectedQuestion.title}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setSelectedQuestion((prev) => ({
+                ...prev!,
+                title: e.target.value,
+              }))
+            }
+            className="w-1/3 text-xl font-bold text-gray-800"
+            minRows={1} // 最小1行から開始
+            maxRows={10} // 最大10行まで拡張
+          />
+          <TextareaAutosize
+            value={selectedQuestion.content}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                content: e.target.value,
+              })
+            }
+            className="mt-2 w-full rounded border border-gray-300 p-2"
+            minRows={1} // 最小1行から開始
+            maxRows={10} // 最大10行まで拡張
+          />
           <ul className="mt-3 space-y-2">
-            <li className="rounded bg-gray-100 p-2">{question.choices1}</li>
-            <li className="rounded bg-gray-100 p-2">{question.choices2}</li>
-            <li className="rounded bg-gray-100 p-2">{question.choices3}</li>
-            <li className="rounded bg-gray-100 p-2">{question.choices4}</li>
+            {selectedQuestion.choices.map((choice, index) => (
+              <li key={choice.id} className="mb-4">
+                <TextareaAutosize
+                  type="text"
+                  value={choice.content}
+                  // {/* 選択肢の入力欄 */}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    const updatedChoices = [...selectedQuestion.choices];
+                    updatedChoices[index] = {
+                      ...choice,
+                      content: e.target.value,
+                    };
+                    setSelectedQuestion({
+                      ...selectedQuestion,
+                      choices: updatedChoices,
+                    });
+                  }}
+                  className="w-1/2 rounded border border-gray-300 p-2"
+                  minRows={1} // 最小1行から開始
+                  maxRows={10} // 最大10行まで拡張
+                />
+
+                {/* 解説の入力欄 */}
+                <TextareaAutosize
+                  value={choice.description}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    const updatedChoices = [...selectedQuestion.choices];
+                    updatedChoices[index] = {
+                      ...choice,
+                      description: e.target.value,
+                    };
+                    setSelectedQuestion({
+                      ...selectedQuestion,
+                      choices: updatedChoices,
+                    });
+                  }}
+                  className="mt-1 w-full rounded border border-gray-300 p-2"
+                  minRows={1} // 最小1行から開始
+                  maxRows={10} // 最大10行まで拡張
+                  placeholder="解説を入力してください"
+                />
+              </li>
+            ))}
           </ul>
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={handlesave}
+              className="relative inline-block rounded border !border-gray-900 bg-white px-1 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
+            >
+              保存
+            </button>
+          </div>
         </div>
       )}
     </div>
