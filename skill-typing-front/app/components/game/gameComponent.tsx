@@ -32,6 +32,7 @@ export default function GameComponent({
               <li
                 key={choice.id}
                 className="rounded bg-white p-4 text-center text-gray-900"
+                onCopy={(e) => e.preventDefault()}
               >
                 {choice.content}
               </li>
@@ -46,6 +47,7 @@ export default function GameComponent({
             onChange={(e) => setUserAnswer(e.target.value)}
             placeholder="答えをここに入力してください"
             className="block w-full rounded border border-blue-300 bg-white p-2 text-center text-gray-900 md:w-1/2"
+            onPaste={(e) => e.preventDefault()}
           />
           <Button type="submit">
             {isLastQuestion ? "ゲーム終了" : "次の問題"}
