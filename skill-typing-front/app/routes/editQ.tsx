@@ -16,15 +16,16 @@ type SelectOption = { value: number; label: string };
 
 function SelectComponent() {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null,
+  );
   const [categories, setCategories] = useState<SelectOption[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<SelectOption | null>(
     null,
   );
   const [words, setWords] = useState<SelectOption[]>([]);
   const [selectedWord, setSelectedWord] = useState<SelectOption | null>(null);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
-    null,
-  );
+
   const navigate = useNavigate();
 
   // カテゴリのプルダウン表示の処理
