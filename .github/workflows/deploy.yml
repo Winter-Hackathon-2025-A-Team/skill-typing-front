@@ -1,13 +1,9 @@
-name: Build and Deploy to S3
+name: Build, Lint, Typecheck, Format, Audit, and Deploy
 
 on:
   push:
     branches:
       - develop
-    # paths:
-    #   - 'app/**/*.js'
-    #   - 'app/**/*.tsx'
-    #   - 'app/**/*.css
 
 jobs:
   build:
@@ -20,32 +16,61 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: "./skill-typing-front/.nvmrc"
+          cache: "npm"
 
-      - name: Install dependencies
-        run: |
-          cd skill-typing-front
-          npm install
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: skill-typing-front/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('skill-typing-front/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies using npm ci
+        working-directory: skill-typing-front
+        run: npm ci
+
+      - name: Run ESLint for static analysis
+        working-directory: skill-typing-front
+        run: npm run lint
+
+      - name: Run type check
+        working-directory: skill-typing-front
+        run: npm run typecheck
+
+      - name: Run Prettier check
+        working-directory: skill-typing-front
+        run: npm run format:check
+
+      - name: Run npm audit for security scan
+        working-directory: skill-typing-front
+        run: npm audit --audit-level=high
 
       - name: Build project
+        working-directory: skill-typing-front
         run: |
-          cd skill-typing-front
+          VITE_COGNITO_AUTHORITY=${{ secrets.VITE_COGNITO_AUTHORITY }} \
+          VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }} \
+          VITE_COGNITO_REDIRECT_URI=${{ secrets.VITE_COGNITO_REDIRECT_URI }} \
+          VITE_COGNITO_RESPONSE_TYPE=${{ secrets.VITE_COGNITO_RESPONSE_TYPE }} \
+          VITE_COGNITO_SCOPE=${{ secrets.VITE_COGNITO_SCOPE }} \
+          VITE_COGNITO_LOGOUT_URI=${{ secrets.VITE_COGNITO_LOGOUT_URI }} \
+          VITE_COGNITO_DOMAIN=${{ secrets.VITE_COGNITO_DOMAIN }} \
+          VITE_API_URI=${{ secrets.VITE_API_URI }} \
           npm run build
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-1
 
       - name: Deploy to S3
-        run: aws s3 sync skill-typing-front/build s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        working-directory: skill-typing-front
+        run: aws s3 sync build s3://${{ secrets.S3_BUCKET_NAME }} --delete
 
       - name: Invalidate CloudFront cache (Optional)
         run: |
-          aws cloudfront create-invalidation --distribution-id E36GMT84PRUJQO --paths "/*"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        if: success()
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
