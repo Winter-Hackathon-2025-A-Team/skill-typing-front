@@ -14,18 +14,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        working-directory: skill-typing-front
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
+          cache-dependency-path: "skill-typing-front/package-lock.json"
 
       - name: Cache node modules
-        working-directory: skill-typing-front
         uses: actions/cache@v4
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          path: skill-typing-front/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('skill-typing-front/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
