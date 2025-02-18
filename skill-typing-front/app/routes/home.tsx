@@ -11,16 +11,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (auth.isLoading) {
-      return;
-    }
-
-    if (!auth.user) {
-      setError("ユーザー情報が取得できませんでした。");
-      setLoading(false);
-      return;
-    }
-
     const fetchLatestScore = async () => {
       setLoading(true);
       setError(null);
