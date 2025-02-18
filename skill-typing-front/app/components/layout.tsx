@@ -1,25 +1,15 @@
 import React from "react";
 import Header from "./header";
 import { Outlet } from "react-router";
-// import { withAuthenticationRequired } from "react-oidc-context";
+import ProtectedRoute from "./protectedRoute";
 
-function Layout() {
+export default function Layout() {
   return (
-    <>
+    <ProtectedRoute>
       <Header />
       <main>
         <Outlet />
       </main>
-    </>
+    </ProtectedRoute>
   );
 }
-
-// export default withAuthenticationRequired(Layout, {
-//   OnRedirecting: () => (
-//     <div className="grid min-h-screen place-items-center">
-//       <p className="-translate-y-12 transform">リダイレクト中...</p>
-//     </div>
-//   ),
-// });
-
-export default Layout;

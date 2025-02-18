@@ -53,7 +53,14 @@ function Auth() {
           <span>UserName: {auth.user.profile["cognito:username"]}</span>
           <span className="ml-4">Email: {auth.user.profile.email}</span>
           <button
-            onClick={() => auth.signoutRedirect()}
+            onClick={() =>
+              auth.signoutRedirect({
+                extraQueryParams: {
+                  client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+                  logout_uri: import.meta.env.VITE_COGNITO_LOGOUT_URI,
+                },
+              })
+            }
             className="ml-4 text-red-500 hover:underline"
           >
             Sign out
