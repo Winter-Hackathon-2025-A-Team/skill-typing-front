@@ -10,6 +10,7 @@ import React from "react";
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
+import { AuthProvider } from "react-oidc-context";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,6 +26,15 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+const cognitoAuthConfig = {
+  authority: import.meta.env.VITE_COGNITO_AUTHORITY,
+  client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+  redirect_uri: import.meta.env.VITE_COGNITO_REDIRECT_URI,
+  response_type: import.meta.env.VITE_COGNITO_RESPONSE_TYPE,
+  scope: import.meta.env.VITE_COGNITO_SCOPE,
+  logout_uri: import.meta.env.VITE_COGNITO_LOGOUT_URI,
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
@@ -35,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <AuthProvider {...cognitoAuthConfig}>{children}</AuthProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

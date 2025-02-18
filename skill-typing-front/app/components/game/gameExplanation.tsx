@@ -1,6 +1,6 @@
 import React from "react";
 import type { Question } from "~/types/types";
-import LinkButton from "./linkButton";
+import LinkButton from "../linkButton";
 
 export default function GameExplanation({
   question,
@@ -12,13 +12,13 @@ export default function GameExplanation({
   increaseIndex: () => void;
 }) {
   return (
-    <div className="grid min-h-screen transform place-items-center">
-      <div className="w-full max-w-screen-lg">
-        <div className="rounded bg-blue-200 p-4">
-          <p className="mb-4 min-h-[150px] rounded bg-white p-4 text-gray-900">
+    <div className="grid pt-20">
+      <div className="mx-auto grid w-full max-w-screen-lg gap-4 px-4">
+        <div className="grid gap-2 rounded bg-blue-200 p-4">
+          <p className="rounded bg-white p-4 text-gray-900 md:min-h-[150px]">
             {question.content}
           </p>
-          <ul className="grid gap-4">
+          <ul className="grid gap-2">
             {question.choices.map((choice) => (
               <li
                 key={choice.id}
@@ -30,7 +30,7 @@ export default function GameExplanation({
             ))}
           </ul>
         </div>
-        <div className="mx-auto mt-4 grid w-fit grid-cols-3 items-center gap-2">
+        <div className="mx-auto grid w-fit grid-cols-3 place-items-center gap-2">
           <button onClick={decreaseIndex} className="px-3 py-1 text-gray-900">
             &lt;
           </button>
@@ -39,7 +39,7 @@ export default function GameExplanation({
             &gt;
           </button>
         </div>
-        <div className="mt-4 grid place-items-center">
+        <div className="grid place-items-center gap-2">
           <LinkButton url="/">ホームに戻る</LinkButton>
         </div>
       </div>

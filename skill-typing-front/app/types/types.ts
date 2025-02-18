@@ -19,3 +19,7 @@ export type Question = {
 export type QuestionsResponse = {
   questions: Question[];
 };
+
+export type Score = {
+  score: string;
+};

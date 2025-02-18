@@ -1,8 +1,9 @@
 import React from "react";
 import Header from "./header";
 import { Outlet } from "react-router";
+// import { withAuthenticationRequired } from "react-oidc-context";
 
-export default function Layout() {
+function Layout() {
   return (
     <>
       <Header />
@@ -12,3 +13,13 @@ export default function Layout() {
     </>
   );
 }
+
+// export default withAuthenticationRequired(Layout, {
+//   OnRedirecting: () => (
+//     <div className="grid min-h-screen place-items-center">
+//       <p className="-translate-y-12 transform">リダイレクト中...</p>
+//     </div>
+//   ),
+// });
+
+export default Layout;
