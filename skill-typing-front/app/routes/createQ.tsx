@@ -34,7 +34,7 @@ const app = () => {
         value={category}
         onChange={(event) => setCategory(event.target.value)}
         placeholder="ジャンルを入力してください"
-        className="mx-auto flex w-1/4 justify-center border-b py-2 placeholder-gray-500 placeholder-opacity-50 focus:border-b-2 focus:border-blue-500 focus:outline-none"
+        className="placeholder-opacity-50 mx-auto flex w-1/4 justify-center border-b py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
 
       <p className="mt-5 text-center text-gray-700">単語</p>
@@ -43,7 +43,7 @@ const app = () => {
         value={word}
         onChange={(event) => setWord(event.target.value)}
         placeholder="単語を入力してください"
-        className="mx-auto flex w-1/4 justify-center border-b py-2 placeholder-gray-500 placeholder-opacity-50 focus:border-b-2 focus:border-blue-500 focus:outline-none"
+        className="placeholder-opacity-50 mx-auto flex w-1/4 justify-center border-b py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
       <div className="absolute right-1/3 my-2 flex">
         <button
