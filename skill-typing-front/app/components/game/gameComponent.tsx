@@ -24,7 +24,10 @@ export default function GameComponent({
       <div className="mx-auto grid w-full max-w-screen-lg gap-4 px-4">
         <h1 className="text-center text-2xl text-gray-900">{question.title}</h1>
         <div className="grid gap-2 rounded bg-blue-200 p-4">
-          <p className="rounded bg-white p-4 text-gray-900 md:min-h-[300px]">
+          <p
+            className="rounded bg-white p-4 text-gray-900 md:min-h-[300px]"
+            onCopy={(e) => e.preventDefault()}
+          >
             {question.content}
           </p>
           <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
