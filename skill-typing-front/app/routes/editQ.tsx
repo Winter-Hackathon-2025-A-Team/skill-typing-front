@@ -127,7 +127,6 @@ function SelectComponent() {
       {selectedQuestion && (
         <div className="mx-auto mt-12 w-full rounded-lg border bg-white p-5 shadow-lg">
           <TextareaAutosize
-            type="text"
             value={selectedQuestion.title}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setSelectedQuestion((prev) => ({
@@ -155,7 +154,6 @@ function SelectComponent() {
             {selectedQuestion.choices.map((choice, index) => (
               <li key={choice.id} className="mb-4">
                 <TextareaAutosize
-                  type="text"
                   value={choice.content}
                   // {/* 選択肢の入力欄 */}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
