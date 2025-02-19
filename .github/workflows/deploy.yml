@@ -1,9 +1,9 @@
 name: Build, Lint, Typecheck, Format, Audit, and Deploy
 
 on:
-  push:
-    branches:
-      - develop
+  # push:
+  #   branches:
+  #     - develop
   pull_request:
     branches:
       - develop
