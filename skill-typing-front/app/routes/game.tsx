@@ -5,6 +5,7 @@ import GameExplanation from "~/components/game/gameExplanation";
 import type { Choice, Question } from "~/types/types";
 import { useAuth } from "react-oidc-context";
 import { useLocation } from "react-router";
+import useCountDownTimer from "~/hooks/useCountDownTimer";
 
 export default function Game() {
   const auth = useAuth();
@@ -15,9 +16,18 @@ export default function Game() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentExplanationIndex, setCurrentExplanationIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [countTime, setCountTime] = useState<number>(60);
 
   const location = useLocation();
   const category = new URLSearchParams(location.search).get("category");
+
+  useCountDownTimer(countTime, setCountTime);
+
+  useEffect(() => {
+    if (countTime === 0) {
+      setScreen("result");
+    }
+  }, [countTime]);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -132,6 +142,7 @@ export default function Game() {
                 question={questions[currentQuestionIndex]}
                 onAnswer={handleAnswer}
                 isLastQuestion={currentQuestionIndex === questions.length - 1}
+                countTime={countTime}
               />
             )}
             {screen === "result" && (

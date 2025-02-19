@@ -6,10 +6,12 @@ export default function GameComponent({
   question,
   onAnswer,
   isLastQuestion,
+  countTime,
 }: {
   question: Question;
   onAnswer: (answer: string) => void;
   isLastQuestion: boolean;
+  countTime: number | null;
 }) {
   const [userAnswer, setUserAnswer] = useState("");
 
@@ -22,7 +24,12 @@ export default function GameComponent({
   return (
     <div className="grid pt-20">
       <div className="mx-auto grid w-full max-w-screen-lg gap-4 px-4">
-        <h1 className="text-center text-2xl text-gray-900">{question.title}</h1>
+        <div className="grid grid-cols-2 items-end px-4">
+          <h1 className="justify-self-start text-2xl text-gray-900">
+            {question.title}
+          </h1>
+          <p className="justify-self-end">残り時間 : {countTime} 秒</p>
+        </div>
         <div className="grid gap-2 rounded bg-blue-200 p-4">
           <p
             className="rounded bg-white p-4 text-gray-900 md:min-h-[300px]"
