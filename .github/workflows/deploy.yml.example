@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - develop
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   build:
@@ -16,8 +19,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: "./skill-typing-front/.nvmrc"
+          node-version-file: "skill-typing-front/.nvmrc"
           cache: "npm"
+          cache-dependency-path: "skill-typing-front/package-lock.json"
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -50,14 +54,14 @@ jobs:
       - name: Build project
         working-directory: skill-typing-front
         run: |
-          VITE_COGNITO_AUTHORITY=${{ secrets.VITE_COGNITO_AUTHORITY }} \
-          VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }} \
-          VITE_COGNITO_REDIRECT_URI=${{ secrets.VITE_COGNITO_REDIRECT_URI }} \
-          VITE_COGNITO_RESPONSE_TYPE=${{ secrets.VITE_COGNITO_RESPONSE_TYPE }} \
-          VITE_COGNITO_SCOPE=${{ secrets.VITE_COGNITO_SCOPE }} \
-          VITE_COGNITO_LOGOUT_URI=${{ secrets.VITE_COGNITO_LOGOUT_URI }} \
-          VITE_COGNITO_DOMAIN=${{ secrets.VITE_COGNITO_DOMAIN }} \
-          VITE_API_URI=${{ secrets.VITE_API_URI }} \
+          VITE_COGNITO_AUTHORITY="${{ secrets.VITE_COGNITO_AUTHORITY }}" \
+          VITE_COGNITO_CLIENT_ID="${{ secrets.VITE_COGNITO_CLIENT_ID }}" \
+          VITE_COGNITO_REDIRECT_URI="${{ secrets.VITE_COGNITO_REDIRECT_URI }}" \
+          VITE_COGNITO_RESPONSE_TYPE="${{ secrets.VITE_COGNITO_RESPONSE_TYPE }}" \
+          VITE_COGNITO_SCOPE="${{ secrets.VITE_COGNITO_SCOPE }}" \
+          VITE_COGNITO_LOGOUT_URI="${{ secrets.VITE_COGNITO_LOGOUT_URI }}" \
+          VITE_COGNITO_DOMAIN="${{ secrets.VITE_COGNITO_DOMAIN }}" \
+          VITE_API_URI="${{ secrets.VITE_API_URI }}" \
           npm run build
 
       - name: Configure AWS credentials
@@ -69,7 +73,7 @@ jobs:
 
       - name: Deploy to S3
         working-directory: skill-typing-front
-        run: aws s3 sync build/client s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        run: aws s3 sync build s3://${{ secrets.S3_BUCKET_NAME }} --delete
 
       - name: Invalidate CloudFront cache (Optional)
         run: |
