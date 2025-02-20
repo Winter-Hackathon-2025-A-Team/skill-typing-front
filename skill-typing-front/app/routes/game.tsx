@@ -79,7 +79,11 @@ export default function Game() {
 
     let newScore = score;
     if (normalizedInput === normalizedCorrectContent) {
-      newScore = score + 1;
+      newScore = score + 5;
+      setScore(newScore);
+    }
+    if (normalizedInput !== normalizedCorrectContent) {
+      newScore = score - 1;
       setScore(newScore);
     }
 
@@ -153,6 +157,8 @@ export default function Game() {
             {screen === "game" && (
               <GameComponent
                 question={questions[currentQuestionIndex]}
+                questionsLength={questions.length}
+                currentQuestionIndex={currentQuestionIndex}
                 onAnswer={handleAnswer}
                 isLastQuestion={currentQuestionIndex === questions.length - 1}
                 countTime={countTime}
