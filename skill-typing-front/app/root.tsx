@@ -11,6 +11,7 @@ import React from "react";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { AuthProvider } from "react-oidc-context";
+import LinkButton from "./components/linkButton";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,6 +26,20 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: "stylesheet", href: stylesheet },
 ];
+
+export function meta() {
+  return [
+    { title: "Skill Typing" },
+    {
+      property: "og:title",
+      content: "Skill Typing",
+    },
+    {
+      name: "description",
+      content: "Skill TypingはITの知識に特化したタイピングアプリです",
+    },
+  ];
+}
 
 const cognitoAuthConfig = {
   authority: import.meta.env.VITE_COGNITO_AUTHORITY,
@@ -57,16 +72,24 @@ export default function App() {
   return <Outlet />;
 }
 
+export function HydrateFallBack() {
+  return (
+    <div className="grid min-h-screen place-items-center">
+      <p className="-translate-y-12 transform">ローディング中..</p>
+    </div>
+  );
+}
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = "おっと！";
+  let details = "予期せぬエラーが発生しました。";
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? "404" : "エラー";
     details =
       error.status === 404
-        ? "The requested page could not be found."
+        ? "要求されたページが見つかりませんでした。"
         : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
@@ -74,14 +97,17 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full overflow-x-auto p-4">
-          <code>{stack}</code>
-        </pre>
-      )}
+    <main className="grid min-h-screen place-items-center">
+      <div className="inline-grid -translate-y-12 transform place-items-center gap-2">
+        <h1>{message}</h1>
+        <p>{details}</p>
+        {stack && (
+          <pre>
+            <code>{stack}</code>
+          </pre>
+        )}
+        <LinkButton url="/">ホームに戻る</LinkButton>
+      </div>
     </main>
   );
 }
