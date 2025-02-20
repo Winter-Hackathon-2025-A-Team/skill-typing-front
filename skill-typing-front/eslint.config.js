@@ -7,6 +7,9 @@ import eslintConfigPrettier from "eslint-config-prettier";
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
+    ignores: ["build/", "public/", "node_modules", ".react-router/"],
+  },
+  {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     settings: {
       react: {
