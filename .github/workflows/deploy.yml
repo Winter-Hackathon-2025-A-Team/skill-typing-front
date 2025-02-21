@@ -51,6 +51,10 @@ jobs:
         working-directory: skill-typing-front
         run: npm audit --audit-level=high
 
+      - name: Run test coverage
+        working-directory: skill-typing-front
+        run: npm run test:coverage
+
       - name: Build project
         working-directory: skill-typing-front
         run: |
