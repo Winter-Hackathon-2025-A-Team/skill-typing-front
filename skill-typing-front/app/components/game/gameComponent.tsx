@@ -4,11 +4,15 @@ import type { Question } from "~/types/types";
 
 export default function GameComponent({
   question,
+  questionsLength,
+  currentQuestionIndex,
   onAnswer,
   isLastQuestion,
   countTime,
 }: {
   question: Question;
+  questionsLength: number;
+  currentQuestionIndex: number;
   onAnswer: (answer: string) => void;
   isLastQuestion: boolean;
   countTime: number | null;
@@ -24,11 +28,18 @@ export default function GameComponent({
   return (
     <div className="grid pt-20">
       <div className="mx-auto grid w-full max-w-screen-lg gap-4 px-4">
-        <div className="grid grid-cols-2 items-end px-4">
+        <div className="grid grid-cols-2 px-4">
           <h1 className="justify-self-start text-2xl text-gray-900">
             {question.title}
           </h1>
-          <p className="justify-self-end">残り時間 : {countTime} 秒</p>
+          <div className="grid justify-self-end">
+            <p className="text-center">残り時間 : {countTime} 秒</p>
+            <progress
+              max={questionsLength}
+              value={currentQuestionIndex}
+              className="[&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-blue-600 [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-blue-200 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-blue-600"
+            />
+          </div>
         </div>
         <div className="grid gap-2 rounded bg-blue-200 p-4">
           <p
