@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router";
 import LinkButton from "./linkButton";
 
 describe("LinkButton コンポーネント", () => {
-  it("子要素をレンダリングし、正しいリンク先を設定する", () => {
+  test("子要素をレンダリングし、正しいリンク先を設定する", () => {
     render(
       <MemoryRouter>
         <LinkButton url="/test">Test Link</LinkButton>

@@ -23,3 +23,8 @@ export type QuestionsResponse = {
 export type Score = {
   score: string;
 };
+
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
