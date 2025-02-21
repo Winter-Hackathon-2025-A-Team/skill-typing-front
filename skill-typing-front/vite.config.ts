@@ -15,5 +15,8 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./app/setupTests.ts"],
+    coverage: {
+      include: ["app/components/**", "app/hooks/**", "app/routes/**"],
+    },
   },
 });

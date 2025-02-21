@@ -10,7 +10,13 @@ import testingLibrary from "eslint-plugin-testing-library";
 export default [
   // 全体の無視設定
   {
-    ignores: ["build/", "public/", "node_modules", ".react-router/"],
+    ignores: [
+      "build/",
+      "public/",
+      "node_modules",
+      ".react-router/",
+      "coverage/",
+    ],
   },
   // すべての JS/TS ファイルに対する共通設定
   {
