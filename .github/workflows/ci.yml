@@ -30,8 +30,6 @@ jobs:
 
       - name: Install dependencies (CI)
         working-directory: skill-typing-front
-        env:
-          VITE_USE_MOCK_AUTH: "true"
         run: npm ci
 
       - name: Run ESLint for static analysis
@@ -54,7 +52,6 @@ jobs:
         working-directory: skill-typing-front
         run: npm run test:coverage
 
-      # ビルドは本来の認証設定で実行
       - name: Build project
         working-directory: skill-typing-front
         run: |
