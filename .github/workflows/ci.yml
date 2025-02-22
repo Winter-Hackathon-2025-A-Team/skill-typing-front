@@ -1,17 +1,14 @@
-name: Build, Lint, Typecheck, Format, Audit, and Deploy
+name: Continuous Integration
 
 on:
-  # push:
-  #   branches:
-  #     - develop
   pull_request:
     branches:
       - develop
 
 jobs:
-  build:
+  ci:
+    name: CI - Test and Build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +17,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: "skill-typing-front/.nvmrc"
-          cache: "npm"
+          cache: npm
           cache-dependency-path: "skill-typing-front/package-lock.json"
 
       - name: Cache node modules
@@ -31,8 +28,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies using npm ci
+      - name: Install dependencies (CI)
         working-directory: skill-typing-front
+        env:
+          VITE_USE_MOCK_AUTH: "true"
         run: npm ci
 
       - name: Run ESLint for static analysis
@@ -55,6 +54,7 @@ jobs:
         working-directory: skill-typing-front
         run: npm run test:coverage
 
+      # ビルドは本来の認証設定で実行
       - name: Build project
         working-directory: skill-typing-front
         run: |
@@ -68,17 +68,8 @@ jobs:
           VITE_API_URI="${{ secrets.VITE_API_URI }}" \
           npm run build
 
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ap-northeast-1
-
-      # - name: Deploy to S3
-      #   working-directory: skill-typing-front
-      #   run: aws s3 sync build s3://${{ secrets.S3_BUCKET_NAME }} --delete
-
-      # - name: Invalidate CloudFront cache (Optional)
-      #   run: |
-      #     aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: skill-typing-front/build
