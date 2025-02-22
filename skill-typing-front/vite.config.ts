@@ -16,7 +16,12 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./app/setupTests.ts"],
     coverage: {
-      include: ["app/components/**", "app/hooks/**", "app/routes/**"],
+      include: [
+        "app/components/**",
+        "app/hooks/**",
+        "app/routes/**",
+        "app/utils/**",
+      ],
     },
   },
 });
