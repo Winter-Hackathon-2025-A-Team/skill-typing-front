@@ -15,7 +15,7 @@ export default function GameComponent({
   currentQuestionIndex: number;
   onAnswer: (answer: string) => void;
   isLastQuestion: boolean;
-  countTime: number | null;
+  countTime: number;
 }) {
   const [userAnswer, setUserAnswer] = useState("");
 

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 export default function useCountDownTimer(
-  countTime: number | null,
+  countTime: number,
   setCountTime: (arg: number) => void,
 ) {
   useEffect(() => {
