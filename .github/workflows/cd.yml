@@ -1,15 +1,15 @@
 name: Continuous Deployment
 
 on:
-  push:
-    tags:
-      - "v*"
+  pull_request:
+    types: [closed]
   workflow_dispatch:
 
 jobs:
   cd:
     name: Deploy to S3
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && contains(join(github.event.pull_request.labels.*.name, ','), 'deploy')
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
