@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, act } from "@testing-library/react";
 import ProtectedRoute from "./protectedRoute";
 import { useNavigate } from "react-router";
-import { setMockAuthState } from "../../setupTests";
+import { setMockAuthState } from "../../../setupTests";
 
 vi.mock("react-router", () => ({
   useNavigate: vi.fn(),

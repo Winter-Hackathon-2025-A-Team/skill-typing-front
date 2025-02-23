@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import Layout from "./layout";
-import { setMockAuthState } from "../setupTests";
+import { setMockAuthState } from "../../setupTests";
 
 function DummyPage() {
   return <div>Outlet Dummy Content</div>;
