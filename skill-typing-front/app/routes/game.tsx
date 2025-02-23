@@ -1,185 +1,170 @@
-import React, { useState, useEffect } from "react";
-import GameComponent from "~/components/game/gameComponent";
-import GameResult from "~/components/game/gameResult";
-import GameExplanation from "~/components/game/gameExplanation";
-import type { Choice, Question } from "~/types/types";
+import React, { useCallback, useReducer, type JSX } from "react";
 import { useAuth } from "react-oidc-context";
 import { useLocation } from "react-router";
 import useCountDownTimer from "~/hooks/useCountDownTimer";
-import LinkButton from "~/components/linkButton";
+import useFetchQuestions from "~/hooks/useFetchQuestions";
+import handleAnswer from "~/utils/handleAnswer";
+import GameScreen from "~/components/game/gameScreen/gameScreen";
+import GameResult from "~/components/game/gameResult";
+import GameExplanation from "~/components/game/gameExplanation/gameExplanation";
+import { gameReducer, initialState } from "~/hooks/gameReducer";
+import Loading from "~/components/loading";
+import Error from "~/components/error";
+import useSound from "use-sound";
 
 export default function Game() {
-  const auth = useAuth();
-  const [questions, setQuestions] = useState<Question[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [screen, setScreen] = useState("game");
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [currentExplanationIndex, setCurrentExplanationIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [countTime, setCountTime] = useState<number>(60);
+  const [state, dispatch] = useReducer(gameReducer, initialState);
+  const {
+    questions,
+    loading,
+    error,
+    screen,
+    currentQuestionIndex,
+    currentExplanationIndex,
+    userAnswer,
+    score,
+    countTime,
+  } = state;
+  const [playCorrectAnswer] = useSound(
+    "../../public/Quiz-Correct_Answer01-1.mp3",
+  );
+  const [playWrongAnswer] = useSound("../../public/Quiz-Wrong_Buzzer02-1.mp3");
 
+  const auth = useAuth();
   const location = useLocation();
   const category = new URLSearchParams(location.search).get("category");
 
-  useCountDownTimer(countTime, setCountTime);
+  useCountDownTimer(
+    countTime,
+    useCallback(
+      (time) => {
+        dispatch({ type: "SET_COUNT_TIME", payload: time });
+      },
+      [dispatch],
+    ),
+    useCallback(() => {
+      dispatch({ type: "SET_SCREEN", payload: "result" });
+    }, [dispatch]),
+  );
 
-  useEffect(() => {
-    if (countTime === 0) {
-      setScreen("result");
-    }
-  }, [countTime]);
+  useFetchQuestions({
+    setLoading: useCallback(
+      (loading) => dispatch({ type: "SET_LOADING", payload: loading }),
+      [dispatch],
+    ),
+    setError: useCallback(
+      (error) => dispatch({ type: "SET_ERROR", payload: error }),
+      [dispatch],
+    ),
+    setQuestions: useCallback(
+      (questions) => dispatch({ type: "SET_QUESTIONS", payload: questions }),
+      [dispatch],
+    ),
+    auth,
+    category,
+  });
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = auth.user?.access_token;
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URI}/api/game/questions?category=${category}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      handleAnswer({
+        questions,
+        currentQuestionIndex,
+        setCurrentQuestionIndex: () =>
+          dispatch({ type: "INCREMENT_QUESTION_INDEX" }),
+        userAnswer,
+        score,
+        setScore: (score) => dispatch({ type: "SET_SCORE", payload: score }),
+        auth,
+        setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
+        setLoading: (loading) =>
+          dispatch({ type: "SET_LOADING", payload: loading }),
+        setScreen: () => dispatch({ type: "SET_SCREEN", payload: "result" }),
+        playCorrectAnswer: playCorrectAnswer,
+        playWrongAnswer: playWrongAnswer,
+      });
+      dispatch({ type: "RESET_USER_ANSWER" });
+    },
+    [questions, currentQuestionIndex, userAnswer, score, auth],
+  );
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`${response.status} ${errorText}`);
-        }
-
-        const data = await response.json();
-        setQuestions(data.questions);
-      } catch (err) {
-        setError("問題の取得に失敗しました");
-        console.error("問題取得エラー:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchQuestions();
-  }, [auth.isLoading, auth.user, category]);
-
-  const handleAnswer = async (userInput: string) => {
+  const handleDecreaseExplanationIndex = useCallback(() => {
     if (!questions) return;
-
-    const currentQuestion = questions[currentQuestionIndex];
-    const correctChoice = currentQuestion.choices.find(
-      (choice: Choice) => choice.id === currentQuestion.answer_id,
-    );
-
-    const normalizedInput = userInput.trim().toLowerCase();
-    const normalizedCorrectContent =
-      correctChoice?.content.trim().toLowerCase() ?? "";
-
-    let newScore = score;
-    if (normalizedInput === normalizedCorrectContent) {
-      newScore = score + 5;
-      setScore(newScore);
-    }
-    if (normalizedInput !== normalizedCorrectContent) {
-      newScore = score - 1;
-      setScore(newScore);
-    }
-
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    } else {
-      try {
-        const uri = import.meta.env.VITE_API_URI;
-        const token = auth.user?.access_token;
-        const response = await fetch(`${uri}/api/scores`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ score: newScore }),
-        });
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`${response.status} ${errorText}`);
-        }
-      } catch (postError) {
-        console.error("スコア登録失敗 : ", postError);
-        setError("スコアの登録に失敗しました");
-        setLoading(false);
-        return; // 以降の処理を中断
-      }
-      setScreen("result");
-    }
-  };
-
-  const handleShowExplanation = () => {
-    setScreen("explanation");
-  };
-
-  const handleDecreaseExplanationIndex = () => {
-    if (!questions) return;
-
     if (
       currentExplanationIndex > 0 &&
       currentExplanationIndex <= questions.length - 1
     ) {
-      setCurrentExplanationIndex((prevIndex) => prevIndex - 1);
+      dispatch({ type: "DECREMENT_EXPLANATION_INDEX" });
     }
-  };
+  }, [questions, currentExplanationIndex]);
 
-  const handleIncreaseExplanationIndex = () => {
+  const handleIncreaseExplanationIndex = useCallback(() => {
     if (!questions) return;
-
     if (currentExplanationIndex < questions.length - 1) {
-      setCurrentExplanationIndex((prevIndex) => prevIndex + 1);
+      dispatch({ type: "INCREMENT_EXPLANATION_INDEX" });
     }
+  }, [questions, currentExplanationIndex]);
+
+  const handleShowExplanation = useCallback(() => {
+    dispatch({ type: "SET_SCREEN", payload: "explanation" });
+  }, [dispatch]);
+
+  const memoizedSetUserAnswer = useCallback(
+    (answer: string) => {
+      dispatch({ type: "SET_USER_ANSWER", payload: answer });
+    },
+    [dispatch],
+  );
+
+  const screenComponents: { [key: string]: JSX.Element } = {
+    game: (
+      <GameScreen
+        question={questions[currentQuestionIndex]}
+        countTime={countTime}
+        questionsLength={questions.length}
+        currentQuestionIndex={currentQuestionIndex}
+        handleSubmit={handleSubmit}
+        userAnswer={userAnswer}
+        setUserAnswer={memoizedSetUserAnswer}
+        isLastQuestion={currentQuestionIndex === questions.length - 1}
+      />
+    ),
+    result: (
+      <GameResult score={score} handleShowExplanation={handleShowExplanation} />
+    ),
+    explanation: (
+      <GameExplanation
+        question={questions[currentExplanationIndex]}
+        currentExplanationIndex={currentExplanationIndex}
+        handleDecreaseExplanationIndex={handleDecreaseExplanationIndex}
+        handleIncreaseExplanationIndex={handleIncreaseExplanationIndex}
+      />
+    ),
   };
 
-  return (
-    <>
-      {loading ? (
-        <div className="grid min-h-screen place-items-center">
-          <p className="-translate-y-12 transform">読み込み中...</p>
-        </div>
-      ) : error ? (
-        <div className="grid min-h-screen place-items-center">
-          <div className="inline-grid -translate-y-12 transform place-items-center">
-            <p className="mb-4 text-red-500">{error}</p>
-            <LinkButton url="/">ホームに戻る</LinkButton>
-          </div>
-        </div>
-      ) : (
-        questions && (
-          <>
-            {screen === "game" && (
-              <GameComponent
-                question={questions[currentQuestionIndex]}
-                questionsLength={questions.length}
-                currentQuestionIndex={currentQuestionIndex}
-                onAnswer={handleAnswer}
-                isLastQuestion={currentQuestionIndex === questions.length - 1}
-                countTime={countTime}
-              />
-            )}
-            {screen === "result" && (
-              <GameResult
-                score={score}
-                onShowExplanation={handleShowExplanation}
-              />
-            )}
-            {screen === "explanation" && (
-              <GameExplanation
-                question={questions[currentExplanationIndex]}
-                decreaseIndex={handleDecreaseExplanationIndex}
-                increaseIndex={handleIncreaseExplanationIndex}
-              />
-            )}
-          </>
-        )
-      )}
-    </>
-  );
+  const renderContent = useCallback(() => {
+    if (loading) return <Loading />;
+    if (error) return <Error error={error} />;
+    if (!questions || questions.length === 0) {
+      return <p className="text-gray-900">質問が見つかりませんでした。</p>;
+    }
+    return screenComponents[screen] || null;
+  }, [
+    loading,
+    error,
+    questions,
+    screen,
+    currentQuestionIndex,
+    countTime,
+    handleSubmit,
+    userAnswer,
+    memoizedSetUserAnswer,
+    score,
+    currentExplanationIndex,
+    handleDecreaseExplanationIndex,
+    handleIncreaseExplanationIndex,
+    handleShowExplanation,
+  ]);
+
+  return <>{renderContent()}</>;
 }
