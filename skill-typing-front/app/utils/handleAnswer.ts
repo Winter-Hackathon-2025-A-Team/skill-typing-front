@@ -11,6 +11,8 @@ export default async function handleAnswer({
   setError,
   setLoading,
   setScreen,
+  playCorrectAnswer,
+  playWrongAnswer,
 }: handleAnswerProps) {
   if (!questions) return;
 
@@ -27,10 +29,12 @@ export default async function handleAnswer({
   if (normalizedInput === normalizedCorrectContent) {
     newScore = score + 5;
     setScore(newScore);
+    playCorrectAnswer();
   }
   if (normalizedInput !== normalizedCorrectContent) {
     newScore = score - 1;
     setScore(newScore);
+    playWrongAnswer();
   }
 
   if (currentQuestionIndex < questions.length - 1) {

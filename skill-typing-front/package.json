@@ -26,7 +26,8 @@
     "react-oidc-context": "^3.2.0",
     "react-router": "^7.1.2",
     "react-select": "5.10.0",
-    "react-textarea-autosize": "8.5.7"
+    "react-textarea-autosize": "8.5.7",
+    "use-sound": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

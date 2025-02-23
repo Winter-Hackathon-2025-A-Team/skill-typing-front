@@ -1,3 +1,4 @@
+import type { PlayFunction } from "node_modules/use-sound/dist/types";
 import type { AuthContextProps } from "react-oidc-context";
 
 export type Choice = {
@@ -76,6 +77,8 @@ export type handleAnswerProps = {
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
   setScreen: (screen: string) => void;
+  playCorrectAnswer: PlayFunction;
+  playWrongAnswer: PlayFunction;
 };
 
 export type GameScreenProps = {

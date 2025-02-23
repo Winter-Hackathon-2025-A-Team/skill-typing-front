@@ -10,6 +10,7 @@ import GameExplanation from "~/components/game/gameExplanation/gameExplanation";
 import { gameReducer, initialState } from "~/hooks/gameReducer";
 import Loading from "~/components/loading";
 import Error from "~/components/error";
+import useSound from "use-sound";
 
 export default function Game() {
   const [state, dispatch] = useReducer(gameReducer, initialState);
@@ -24,6 +25,10 @@ export default function Game() {
     score,
     countTime,
   } = state;
+  const [playCorrectAnswer] = useSound(
+    "../../public/Quiz-Correct_Answer01-1.mp3",
+  );
+  const [playWrongAnswer] = useSound("../../public/Quiz-Wrong_Buzzer02-1.mp3");
 
   const auth = useAuth();
   const location = useLocation();
@@ -75,6 +80,8 @@ export default function Game() {
         setLoading: (loading) =>
           dispatch({ type: "SET_LOADING", payload: loading }),
         setScreen: () => dispatch({ type: "SET_SCREEN", payload: "result" }),
+        playCorrectAnswer: playCorrectAnswer,
+        playWrongAnswer: playWrongAnswer,
       });
       dispatch({ type: "RESET_USER_ANSWER" });
     },
