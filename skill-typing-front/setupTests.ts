@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { server } from "./mocks/server";
+import { server } from "./app/mocks/server";
 import { afterAll, afterEach, beforeAll } from "vitest";
 import type { AuthContextProps } from "react-oidc-context";
 import type { Logger, UserManagerEvents } from "oidc-client-ts";
