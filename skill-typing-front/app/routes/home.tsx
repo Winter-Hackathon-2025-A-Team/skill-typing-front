@@ -42,15 +42,13 @@ export default function Home() {
   }, [loading, error, latestScore]);
 
   return (
-    <div className="grid min-h-screen -translate-y-12 transform place-items-center">
-      <div className="grid max-w-screen-xl place-items-center gap-4 px-4">
-        {renderScore()}
-        <CategoryForm
-          handleSubmit={handleSubmit}
-          category={category}
-          handleChange={handleChange}
-        />
-      </div>
+    <div className="grid max-w-screen-xl place-items-center gap-4">
+      {renderScore()}
+      <CategoryForm
+        handleSubmit={handleSubmit}
+        category={category}
+        handleChange={handleChange}
+      />
     </div>
   );
 }

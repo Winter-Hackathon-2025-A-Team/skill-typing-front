@@ -15,22 +15,20 @@ export default function GameScreen({
   isLastQuestion,
 }: GameScreenProps) {
   return (
-    <div className="grid pt-20">
-      <div className="mx-auto grid w-full max-w-screen-lg gap-4 px-4">
-        <GameTitle
-          question={question}
-          countTime={countTime}
-          questionsLength={questionsLength}
-          currentQuestionIndex={currentQuestionIndex}
-        />
-        <GameContent question={question} />
-        <GameForm
-          handleSubmit={handleSubmit}
-          userAnswer={userAnswer}
-          setUserAnswer={setUserAnswer}
-          isLastQuestion={isLastQuestion}
-        />
-      </div>
+    <div className="mx-auto grid w-full max-w-screen-lg gap-4 px-4">
+      <GameTitle
+        question={question}
+        countTime={countTime}
+        questionsLength={questionsLength}
+        currentQuestionIndex={currentQuestionIndex}
+      />
+      <GameContent question={question} />
+      <GameForm
+        handleSubmit={handleSubmit}
+        userAnswer={userAnswer}
+        setUserAnswer={setUserAnswer}
+        isLastQuestion={isLastQuestion}
+      />
     </div>
   );
 }
