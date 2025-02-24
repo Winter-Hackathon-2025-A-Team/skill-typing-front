@@ -1,4 +1,4 @@
-import type { Question } from "~/types/types";
+import type { Question, AnswerResult } from "~/types/types";
 
 export type State = {
   questions: Question[];
@@ -10,6 +10,7 @@ export type State = {
   userAnswer: string;
   score: number;
   countTime: number;
+  results: AnswerResult[];
 };
 
 export const initialState: State = {
@@ -22,6 +23,7 @@ export const initialState: State = {
   userAnswer: "",
   score: 0,
   countTime: 60,
+  results: [],
 };
 
 export type Action =
@@ -35,12 +37,20 @@ export type Action =
   | { type: "SET_USER_ANSWER"; payload: string }
   | { type: "SET_SCORE"; payload: number }
   | { type: "SET_COUNT_TIME"; payload: number }
+  | {
+      type: "SET_RESULTS";
+      payload: { index: number; result: AnswerResult };
+    }
   | { type: "RESET_USER_ANSWER" };
 
 export function gameReducer(state: State, action: Action): State {
   switch (action.type) {
     case "SET_QUESTIONS":
-      return { ...state, questions: action.payload ?? [] };
+      return {
+        ...state,
+        questions: action.payload ?? [],
+        results: Array(action.payload.length).fill("-"),
+      };
     case "SET_LOADING":
       return { ...state, loading: action.payload };
     case "SET_ERROR":
@@ -65,6 +75,12 @@ export function gameReducer(state: State, action: Action): State {
       return { ...state, score: action.payload };
     case "SET_COUNT_TIME":
       return { ...state, countTime: action.payload };
+    case "SET_RESULTS": {
+      const { index, result } = action.payload;
+      const updateResults = [...state.results];
+      updateResults[index] = result;
+      return { ...state, results: updateResults };
+    }
     case "RESET_USER_ANSWER":
       return { ...state, userAnswer: "" };
     default:

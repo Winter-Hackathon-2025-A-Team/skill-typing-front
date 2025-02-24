@@ -24,6 +24,7 @@ export default function Game() {
     userAnswer,
     score,
     countTime,
+    results,
   } = state;
   const [playCorrectAnswer] = useSound(
     "../../public/Quiz-Correct_Answer01-1.mp3",
@@ -82,6 +83,11 @@ export default function Game() {
         setScreen: () => dispatch({ type: "SET_SCREEN", payload: "result" }),
         playCorrectAnswer: playCorrectAnswer,
         playWrongAnswer: playWrongAnswer,
+        setResults: (result) =>
+          dispatch({
+            type: "SET_RESULTS",
+            payload: { index: currentQuestionIndex, result },
+          }),
       });
       dispatch({ type: "RESET_USER_ANSWER" });
     },
@@ -130,11 +136,16 @@ export default function Game() {
       />
     ),
     result: (
-      <GameResult score={score} handleShowExplanation={handleShowExplanation} />
+      <GameResult
+        score={score}
+        handleShowExplanation={handleShowExplanation}
+        results={results}
+      />
     ),
     explanation: (
       <GameExplanation
         question={questions[currentExplanationIndex]}
+        results={results}
         currentExplanationIndex={currentExplanationIndex}
         handleDecreaseExplanationIndex={handleDecreaseExplanationIndex}
         handleIncreaseExplanationIndex={handleIncreaseExplanationIndex}
