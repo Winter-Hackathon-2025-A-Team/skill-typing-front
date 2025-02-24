@@ -21,6 +21,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
+          github-token: ${{ secrets.TOKEN_FOR_DOWNLOAD}}
           run-id: ${{ github.event.inputs.run_id }}
 
       - name: Configure AWS credentials
