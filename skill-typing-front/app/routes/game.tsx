@@ -27,9 +27,9 @@ export default function Game() {
     results,
   } = state;
   const [playCorrectAnswer] = useSound(
-    "../../public/Quiz-Correct_Answer01-1.mp3",
+    "../../Quiz-Correct_Answer01-1.mp3",
   );
-  const [playWrongAnswer] = useSound("../../public/Quiz-Wrong_Buzzer02-1.mp3");
+  const [playWrongAnswer] = useSound("../../Quiz-Wrong_Buzzer02-1.mp3");
 
   const auth = useAuth();
   const location = useLocation();
