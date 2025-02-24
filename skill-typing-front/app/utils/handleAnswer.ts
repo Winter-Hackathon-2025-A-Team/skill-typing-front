@@ -13,6 +13,7 @@ export default async function handleAnswer({
   setScreen,
   playCorrectAnswer,
   playWrongAnswer,
+  setResults,
 }: handleAnswerProps) {
   if (!questions) return;
 
@@ -29,11 +30,12 @@ export default async function handleAnswer({
   if (normalizedInput === normalizedCorrectContent) {
     newScore = score + 5;
     setScore(newScore);
+    setResults("○");
     playCorrectAnswer();
-  }
-  if (normalizedInput !== normalizedCorrectContent) {
+  } else {
     newScore = score - 1;
     setScore(newScore);
+    setResults("✗");
     playWrongAnswer();
   }
 

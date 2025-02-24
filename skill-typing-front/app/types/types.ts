@@ -79,6 +79,15 @@ export type handleAnswerProps = {
   setScreen: (screen: string) => void;
   playCorrectAnswer: PlayFunction;
   playWrongAnswer: PlayFunction;
+  setResults: (results: AnswerResult) => void;
+};
+
+export type AnswerResult = "○" | "✗" | "-";
+
+export const resultColors: { [key in AnswerResult]: string } = {
+  "○": "text-green-500",
+  "✗": "text-red-500",
+  "-": "text-gray-900",
 };
 
 export type GameScreenProps = {
@@ -94,11 +103,13 @@ export type GameScreenProps = {
 
 export type GameResultProps = {
   score: number;
+  results: AnswerResult[];
   handleShowExplanation: () => void;
 };
 
 export type GameExplanationProps = {
   question: Question;
+  results: AnswerResult[];
   currentExplanationIndex: number;
   handleDecreaseExplanationIndex: () => void;
   handleIncreaseExplanationIndex: () => void;
