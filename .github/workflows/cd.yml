@@ -15,7 +15,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: build
+          path: skill-typing-front/build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
