@@ -4,6 +4,12 @@ on:
   pull_request:
     types: [closed]
   workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'run_id of uploaded artifact'
+        required: true
+        type: string
+
 
 jobs:
   cd:
@@ -16,6 +22,7 @@ jobs:
         with:
           name: build-artifact
           path: skill-typing-front/build
+          run-id: ${{ github.event.inputs.run_id }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
