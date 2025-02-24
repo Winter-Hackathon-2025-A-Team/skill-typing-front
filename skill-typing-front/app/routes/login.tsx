@@ -10,22 +10,16 @@ export default function Login() {
   const auth = useAuth();
 
   const renderLoading = useCallback(
-    () => (
-      <div className="grid min-h-screen place-items-center">
-        <p className="-translate-y-12 transform">リダイレクト中...</p>
-      </div>
-    ),
+    () => <p className="-translate-y-12 transform">リダイレクト中...</p>,
     [],
   );
 
   const renderError = useCallback(
     () => (
-      <div className="grid min-h-screen place-items-center">
-        <div className="grid -translate-y-12 transform place-items-center gap-2">
-          <p>エラーが発生しました</p>
-          <p>エラー内容 : {auth.error?.message}</p>
-          <Button onClick={() => auth.signinRedirect()}>ログイン</Button>
-        </div>
+      <div className="grid -translate-y-12 transform place-items-center gap-2">
+        <p>エラーが発生しました</p>
+        <p>エラー内容 : {auth.error?.message}</p>
+        <Button onClick={() => auth.signinRedirect()}>ログイン</Button>
       </div>
     ),
     [auth],
@@ -33,17 +27,15 @@ export default function Login() {
 
   const renderUnauthenticated = useCallback(
     () => (
-      <div className="grid min-h-screen place-items-center">
-        <p className="-translate-y-12 transform place-items-center">
-          ログイン・サインアップは
-          <span
-            onClick={() => auth.signinRedirect()}
-            className="cursor-pointer text-blue-500 hover:underline"
-          >
-            こちら
-          </span>
-        </p>
-      </div>
+      <p className="-translate-y-12 transform place-items-center">
+        ログイン・サインアップは
+        <span
+          onClick={() => auth.signinRedirect()}
+          className="cursor-pointer text-blue-500 hover:underline"
+        >
+          こちら
+        </span>
+      </p>
     ),
     [auth],
   );
@@ -51,12 +43,10 @@ export default function Login() {
   const renderAuthenticated = useCallback(() => {
     if (auth.user && isCustomProfile(auth.user.profile)) {
       return (
-        <div className="grid min-h-screen place-items-center">
-          <div className="grid -translate-y-12 transform place-items-center gap-2">
-            <p>すでにログインしています</p>
-            <LinkButton url="/">ホームに戻る</LinkButton>
-            <Button onClick={() => handleLogout(auth)}>ログアウト</Button>
-          </div>
+        <div className="grid -translate-y-12 transform place-items-center gap-2">
+          <p>すでにログインしています</p>
+          <LinkButton url="/">ホームに戻る</LinkButton>
+          <Button onClick={() => handleLogout(auth)}>ログアウト</Button>
         </div>
       );
     }
@@ -87,5 +77,9 @@ export default function Login() {
     renderAuthenticated,
   ]);
 
-  return renderContent();
+  return (
+    <main className="grid min-h-screen place-items-center">
+      {renderContent()}
+    </main>
+  );
 }
