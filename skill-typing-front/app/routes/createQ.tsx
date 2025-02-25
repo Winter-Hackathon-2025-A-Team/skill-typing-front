@@ -1,27 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "react-oidc-context";
 
 const app = () => {
   const [category, setCategory] = useState<string>("");
   const [word, setWord] = useState<string>("");
   const navigate = useNavigate();
-  const auth = useAuth();
-  const token = auth.user?.access_token;
   // 作成ボタンを押した時の処理
   const handleCreate = async () => {
+    const data = { category, word };
+
     try {
-      const apiUrl = import.meta.env.VITE_API_URI;
-      const response = await fetch(
-        `${apiUrl}/api/generate-quiz?category=${encodeURI(category)}&topic=${encodeURI(word)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await fetch("バックのエンドポイント記載", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(data),
+      });
 
       if (!response.ok) {
         throw new Error("サーバーとの通信に失敗しました");
@@ -43,7 +38,7 @@ const app = () => {
   return (
     <div className="container">
       {/* カテゴリと単語の入力 */}
-      <p className="text-center text-gray-700">ジャンル</p>
+      <p className="mt-20 text-center text-gray-700">問題</p>
       <input
         type="text"
         value={category}
@@ -52,7 +47,7 @@ const app = () => {
         className="placeholder-opacity-50 mx-auto flex w-1/4 border-b py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
 
-      <p className="text-center text-gray-700">単語</p>
+      <p className="mt-5 text-center text-gray-700">単語</p>
       <input
         type="text"
         value={word}

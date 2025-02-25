@@ -9,7 +9,7 @@ const app = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="mt-60 flex flex-col items-center gap-4">
       <button
         onClick={() => handleNavigate("/create")}
         className="boder relative inline-block rounded border-gray-400 bg-white px-10 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
