@@ -24,6 +24,9 @@ jobs:
           github-token: ${{ secrets.TOKEN_FOR_DOWNLOAD }}
           run-id: ${{ github.event.inputs.run_id }}
 
+      - name: check directory
+        run: ls -la
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
