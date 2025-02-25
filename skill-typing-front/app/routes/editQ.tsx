@@ -3,6 +3,7 @@ import axios from "axios";
 import Select from "react-select";
 import { useNavigate } from "react-router";
 import TextareaAutosize from "react-textarea-autosize";
+import { useAuth } from "react-oidc-context";
 
 type Category = { id: number; title: string };
 type Question = {
@@ -27,19 +28,28 @@ function SelectComponent() {
   const [selectedWord, setSelectedWord] = useState<SelectOption | null>(null);
 
   const navigate = useNavigate();
+  const auth = useAuth();
+  const token = auth.user?.access_token;
 
   // カテゴリのプルダウン表示の処理
   useEffect(() => {
-    axios.get("/api/game/questions").then((response) => {
-      const SendQuestions: Question[] = response.data.questions;
+    const apiUrl = import.meta.env.VITE_API_URI;
+    axios
+      .post(`${apiUrl}/api/questions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        const SendQuestions: Question[] = response.data.questions;
 
-      const uniqueCategories = Array.from(
-        new Map(SendQuestions.map((q) => [q.category.id, q.category])).values(),
-      ).map((cat) => ({ value: cat.id, label: cat.title }));
+        const uniqueCategories = Array.from(
+          new Map(
+            SendQuestions.map((q) => [q.category.id, q.category]),
+          ).values(),
+        ).map((cat) => ({ value: cat.id, label: cat.title }));
 
-      setQuestions(SendQuestions);
-      setCategories(uniqueCategories);
-    });
+        setQuestions(SendQuestions);
+        setCategories(uniqueCategories);
+      });
   }, []);
 
   //  単語のプルダウン表示の処理
@@ -70,13 +80,19 @@ function SelectComponent() {
       console.error("エラー: 質問が選択されていません");
       return;
     }
-
     try {
-      const response = await fetch("バックのエンドポイント記載", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedQuestion),
-      });
+      const apiUrl = import.meta.env.VITE_API_URI;
+      const response = await fetch(
+        `${apiUrl}/api/questions/${selectedQuestion.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedQuestion),
+        },
+      );
 
       if (!response.ok) throw new Error("サーバーとの通信に失敗しました");
 
@@ -85,6 +101,39 @@ function SelectComponent() {
       console.error("エラー:", error);
     }
   };
+
+  // 削除ボタンを押した時の処理
+  const handledelete = async () => {
+    if (!selectedQuestion) {
+      console.error("エラー: 質問が選択されていません");
+      return;
+    }
+
+    if (!window.confirm("削除しますか？")) {
+      return;
+    }
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URI;
+      const response = await fetch(
+        `${apiUrl}/api/questions/${selectedQuestion.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("サーバーとの通信に失敗しました");
+
+      console.log("サーバーからのレスポンス:", await response.json());
+    } catch (error) {
+      console.error("エラー:", error);
+    }
+  };
+
   // 戻るボタンを押した時の処理
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -93,16 +142,16 @@ function SelectComponent() {
   return (
     <div className="container">
       {/* プルダウンリストから取得したカテゴリーと単語を選択 */}
-      <p className="mt-20 text-center text-gray-700">問題</p>
+      <p className="text-center text-gray-700">問題</p>
       <Select
         value={selectedCategory}
         options={categories}
         onChange={setSelectedCategory}
         placeholder="ジャンルを選択してください"
-        className="placeholder-opacity-50 mx-auto flex w-1/4 justify-center py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
+        className="placeholder-opacity-50 mx-auto flex w-1/3 justify-center py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
 
-      <p className="mt-5 text-center text-gray-700">単語</p>
+      <p className="text-center text-gray-700">単語</p>
       <Select
         value={selectedWord}
         options={words}
@@ -201,6 +250,12 @@ function SelectComponent() {
               className="relative inline-block rounded border !border-gray-900 bg-white px-1 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
             >
               保存
+            </button>
+            <button
+              onClick={handledelete}
+              className="relative inline-block rounded border !border-gray-900 bg-white px-1 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
+            >
+              削除
             </button>
           </div>
         </div>

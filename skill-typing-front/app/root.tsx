@@ -12,6 +12,7 @@ import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { AuthProvider } from "react-oidc-context";
 import LinkButton from "./components/linkButton";
+import Loading from "./components/loading";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -73,11 +74,7 @@ export default function App() {
 }
 
 export function HydrateFallBack() {
-  return (
-    <div className="grid min-h-screen place-items-center">
-      <p className="-translate-y-12 transform">ローディング中..</p>
-    </div>
-  );
+  return <Loading />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

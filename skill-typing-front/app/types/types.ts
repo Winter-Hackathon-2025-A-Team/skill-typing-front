@@ -1,3 +1,6 @@
+import type { PlayFunction } from "node_modules/use-sound/dist/types";
+import type { AuthContextProps } from "react-oidc-context";
+
 export type Choice = {
   id: number;
   content: string;
@@ -22,4 +25,105 @@ export type QuestionsResponse = {
 
 export type Score = {
   score: string;
+};
+
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+export type ProtectedRouteProps = {
+  children: React.ReactNode;
+  redirectPath?: string;
+  redirectDelay?: number;
+};
+
+export type GameTitleProps = {
+  question: Question;
+  countTime: number;
+  questionsLength: number;
+  currentQuestionIndex: number;
+};
+
+export type GameFormProps = {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  userAnswer: string;
+  setUserAnswer: (userAnswer: string) => void;
+  isLastQuestion: boolean;
+};
+
+export type GameExplanationPaginationProps = {
+  currentExplanationIndex: number;
+  decreaseIndex: () => void;
+  increaseIndex: () => void;
+};
+
+export type useFetchQuestionsProps = {
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  setQuestions: (questions: Question[]) => void;
+  auth: AuthContextProps;
+  category: string | null;
+};
+
+export type handleAnswerProps = {
+  questions: Question[] | null;
+  currentQuestionIndex: number;
+  setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
+  userAnswer: string;
+  score: number;
+  setScore: (score: number) => void;
+  auth: AuthContextProps;
+  setError: (error: string | null) => void;
+  setLoading: (loading: boolean) => void;
+  setScreen: (screen: string) => void;
+  playCorrectAnswer: PlayFunction;
+  playWrongAnswer: PlayFunction;
+  setResults: (results: AnswerResult) => void;
+};
+
+export type AnswerResult = "○" | "✗" | "-";
+
+export const resultColors: { [key in AnswerResult]: string } = {
+  "○": "text-green-500",
+  "✗": "text-red-500",
+  "-": "text-gray-900",
+};
+
+export type GameScreenProps = {
+  question: Question;
+  countTime: number;
+  questionsLength: number;
+  currentQuestionIndex: number;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  userAnswer: string;
+  setUserAnswer: (answer: string) => void;
+  isLastQuestion: boolean;
+};
+
+export type GameResultProps = {
+  score: number;
+  results: AnswerResult[];
+  handleShowExplanation: () => void;
+};
+
+export type GameExplanationProps = {
+  question: Question;
+  results: AnswerResult[];
+  currentExplanationIndex: number;
+  handleDecreaseExplanationIndex: () => void;
+  handleIncreaseExplanationIndex: () => void;
+};
+
+export type useFetchLatestScoreProps = {
+  auth: AuthContextProps;
+  setLoading: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
+  setLatestScore: React.Dispatch<React.SetStateAction<number | null>>;
+};
+
+export type CategoryFromProps = {
+  handleSubmit: (e: React.ChangeEvent<HTMLFormElement>) => void;
+  category: string;
+  handleChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
