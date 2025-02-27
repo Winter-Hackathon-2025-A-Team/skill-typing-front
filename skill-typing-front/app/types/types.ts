@@ -63,7 +63,7 @@ export type useFetchQuestionsProps = {
   setError: (error: string | null) => void;
   setQuestions: (questions: Question[]) => void;
   auth: AuthContextProps;
-  category: string | null;
+  categoryId: string | null;
 };
 
 export type handleAnswerProps = {
@@ -124,6 +124,6 @@ export type useFetchLatestScoreProps = {
 
 export type CategoryFromProps = {
   handleSubmit: (e: React.ChangeEvent<HTMLFormElement>) => void;
-  category: string;
+  categoryId: string;
   handleChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };

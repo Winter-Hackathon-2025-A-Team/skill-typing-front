@@ -3,9 +3,9 @@ import { http, HttpResponse } from "msw";
 export const handlers = [
   http.get("/api/game/questions", ({ request }) => {
     const url = new URL(request.url);
-    const category = url.searchParams.get("category");
+    const category = url.searchParams.get("category_id");
 
-    if (category === "基本情報技術者") {
+    if (category === "1") {
       return HttpResponse.json({
         questions: [
           {
@@ -112,7 +112,7 @@ export const handlers = [
           },
         ],
       });
-    } else if (category === "AWSアソシエイト") {
+    } else if (category === "2") {
       return HttpResponse.json({
         questions: [
           {

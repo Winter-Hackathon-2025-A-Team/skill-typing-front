@@ -31,7 +31,7 @@ export default function Game() {
 
   const auth = useAuth();
   const location = useLocation();
-  const category = new URLSearchParams(location.search).get("category");
+  const categoryId = new URLSearchParams(location.search).get("category_id");
 
   useCountDownTimer(
     countTime,
@@ -60,7 +60,7 @@ export default function Game() {
       [dispatch],
     ),
     auth,
-    category,
+    categoryId,
   });
 
   const handleSubmit = useCallback(

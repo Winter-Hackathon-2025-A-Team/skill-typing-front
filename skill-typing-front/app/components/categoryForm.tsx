@@ -4,7 +4,7 @@ import type { CategoryFromProps } from "~/types/types";
 
 export default function CategoryForm({
   handleSubmit,
-  category,
+  categoryId,
   handleChange,
 }: CategoryFromProps) {
   return (
@@ -15,12 +15,12 @@ export default function CategoryForm({
       <label className="grid grid-cols-1 gap-2 text-center">
         カテゴリー選択
         <select
-          value={category}
+          value={categoryId}
           onChange={handleChange}
           className="rounded border border-blue-600 bg-white p-2 text-center"
         >
-          <option value="基本情報技術者">基本情報技術者</option>
-          <option value="AWSアソシエイト">AWSアソシエイト</option>
+          <option value="1">基本情報技術者</option>
+          <option value="2">AWSアソシエイト</option>
         </select>
       </label>
       <Button type="submit">ゲーム開始</Button>

@@ -9,14 +9,14 @@ export default function Home() {
   const [latestScore, setLatestScore] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean | null>(true);
   const [error, setError] = useState<string | null>(null);
-  const [category, setCategory] = useState("基本情報技術者");
+  const [categoryId, setCategoryId] = useState("1");
   const navigate = useNavigate();
 
   useFetchLatestScore({ auth, setLoading, setError, setLatestScore });
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setCategory(e.target.value);
+      setCategoryId(e.target.value);
     },
     [],
   );
@@ -24,9 +24,9 @@ export default function Home() {
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      navigate(`/game?category=${category}`);
+      navigate(`/game?category_id=${categoryId}`);
     },
-    [category, navigate],
+    [categoryId, navigate],
   );
 
   const renderLoading = () => <p className="text-gray-900">読み込み中...</p>;
@@ -46,7 +46,7 @@ export default function Home() {
       {renderScore()}
       <CategoryForm
         handleSubmit={handleSubmit}
-        category={category}
+        categoryId={categoryId}
         handleChange={handleChange}
       />
     </div>
