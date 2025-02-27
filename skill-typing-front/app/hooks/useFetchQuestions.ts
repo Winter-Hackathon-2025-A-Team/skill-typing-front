@@ -6,7 +6,7 @@ export default function useFetchQuestions({
   setError,
   setQuestions,
   auth,
-  category,
+  categoryId,
 }: useFetchQuestionsProps) {
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -15,7 +15,7 @@ export default function useFetchQuestions({
       try {
         const token = auth.user?.access_token;
         const response = await fetch(
-          `${import.meta.env.VITE_API_URI}/api/game/questions?category=${category}`,
+          `${import.meta.env.VITE_API_URI}/api/game/questions?category_id=${categoryId}`,
           {
             method: "GET",
             headers: {
@@ -41,5 +41,5 @@ export default function useFetchQuestions({
     };
 
     fetchQuestions();
-  }, [auth.isLoading, auth.user, category]);
+  }, [auth.isLoading, auth.user, categoryId]);
 }
