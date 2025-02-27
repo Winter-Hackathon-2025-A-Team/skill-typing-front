@@ -12,13 +12,13 @@ const app = () => {
     <div className="flex flex-col items-center gap-4">
       <button
         onClick={() => handleNavigate("/create")}
-        className="boder relative inline-block rounded border-gray-400 bg-white px-10 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
+        className="boder relative inline-block rounded-full border-gray-400 bg-blue-600 px-10 py-2 font-semibold text-white hover:bg-blue-500 active:bottom-[-1px]"
       >
         新規問題作成
       </button>
       <button
         onClick={() => handleNavigate("/edit")}
-        className="boder relative inline-block rounded border-gray-400 bg-white px-14 py-1 font-semibold text-gray-800 transition-all hover:bg-red-200 active:bottom-[-1px]"
+        className="boder relative inline-block rounded-full border-gray-400 bg-blue-600 px-14 py-2 font-semibold text-white hover:bg-blue-500 active:bottom-[-1px]"
       >
         問題編集
       </button>

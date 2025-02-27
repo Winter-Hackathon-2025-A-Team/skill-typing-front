@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import { useNavigate } from "react-router";
-import TextareaAutosize from "react-textarea-autosize";
 import { useAuth } from "react-oidc-context";
+import TextareaAutosize from "react-textarea-autosize";
 
 type Category = { id: number; title: string };
 type Question = {
@@ -32,23 +32,16 @@ function SelectComponent() {
 
   // カテゴリのプルダウン表示の処理
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URI;
-    axios
-      .post(`${apiUrl}/api/questions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        const SendQuestions: Question[] = response.data.questions;
+    axios.get("/api/game/questions").then((response) => {
+      const SendQuestions: Question[] = response.data.questions;
 
-        const uniqueCategories = Array.from(
-          new Map(
-            SendQuestions.map((q) => [q.category.id, q.category]),
-          ).values(),
-        ).map((cat) => ({ value: cat.id, label: cat.title }));
+      const uniqueCategories = Array.from(
+        new Map(SendQuestions.map((q) => [q.category.id, q.category])).values(),
+      ).map((cat) => ({ value: cat.id, label: cat.title }));
 
-        setQuestions(SendQuestions);
-        setCategories(uniqueCategories);
-      });
+      setQuestions(SendQuestions);
+      setCategories(uniqueCategories);
+    });
   }, []);
 
   //  単語のプルダウン表示の処理
@@ -79,19 +72,13 @@ function SelectComponent() {
       console.error("エラー: 質問が選択されていません");
       return;
     }
+
     try {
-      const apiUrl = import.meta.env.VITE_API_URI;
-      const response = await fetch(
-        `${apiUrl}/api/questions/${selectedQuestion.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(selectedQuestion),
-        },
-      );
+      const response = await fetch("バックのエンドポイント記載", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selectedQuestion),
+      });
 
       if (!response.ok) throw new Error("サーバーとの通信に失敗しました");
 
@@ -141,16 +128,16 @@ function SelectComponent() {
   return (
     <div className="container">
       {/* プルダウンリストから取得したカテゴリーと単語を選択 */}
-      <p className="text-center text-gray-700">問題</p>
+      <p className="mt-20 text-center text-gray-700">問題</p>
       <Select
         value={selectedCategory}
         options={categories}
         onChange={setSelectedCategory}
         placeholder="ジャンルを選択してください"
-        className="placeholder-opacity-50 mx-auto flex w-1/3 justify-center py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
+        className="placeholder-opacity-50 mx-auto flex w-1/4 justify-center py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
 
-      <p className="text-center text-gray-700">単語</p>
+      <p className="mt-5 text-center text-gray-700">単語</p>
       <Select
         value={selectedWord}
         options={words}
