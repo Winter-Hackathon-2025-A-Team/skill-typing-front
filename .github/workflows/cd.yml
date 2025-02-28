@@ -1,8 +1,6 @@
 name: Continuous Deployment
 
 on:
-  pull_request:
-    types: [closed]
   workflow_dispatch:
     inputs:
       run_id:
@@ -15,7 +13,7 @@ jobs:
   cd:
     name: Deploy to S3
     runs-on: ubuntu-latest
-    if: (github.event_name == 'workflow_dispatch') || (github.event.pull_request.merged == true && contains(join(github.event.pull_request.labels.*.name, ','), 'deploy'))
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4

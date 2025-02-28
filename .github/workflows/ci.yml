@@ -71,3 +71,7 @@ jobs:
         with:
           name: build-artifact
           path: skill-typing-front/build
+
+      - name: Display run id
+        run: |
+          echo "Run ID: ${{ github.run_id }}"
