@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import CategoryForm from "~/components/categoryForm";
 import useFetchLatestScore from "~/hooks/useFetchLatestScore";
 
@@ -11,8 +11,18 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState("1");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useFetchLatestScore({ auth, setLoading, setError, setLatestScore });
+  const fetchLatestScore = useFetchLatestScore({
+    auth,
+    setLoading,
+    setError,
+    setLatestScore,
+  });
+
+  useEffect(() => {
+    fetchLatestScore();
+  }, [location, fetchLatestScore]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
