@@ -91,7 +91,7 @@ const App = () => {
         className="placeholder-opacity-50 mx-auto flex w-1/4 border-b py-2 placeholder-gray-500 focus:border-b-2 focus:border-blue-500 focus:outline-none"
       />
 
-      <p className="text-center text-gray-700">単語</p>
+      <p className="mt-4 text-center text-gray-700">単語</p>
       <input
         type="text"
         value={word}
