@@ -22,6 +22,12 @@ const app = () => {
       >
         問題編集
       </button>
+      <button
+        onClick={() => handleNavigate("/")}
+        className="boder relative mt-10 inline-block rounded-full border-gray-400 bg-blue-600 px-14 py-2 font-semibold text-white hover:bg-blue-500 active:bottom-[-1px]"
+      >
+        ホームへ戻る
+      </button>
     </div>
   );
 };
